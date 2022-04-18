@@ -1,4 +1,4 @@
-/// Copyright (c) 2021 Razeware LLC
+/// Copyright (c) 2022 Razeware LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -32,20 +32,16 @@
 
 import SwiftUI
 
-struct CardThumbnailView: View {
-    let card: Card
-    var body: some View {
-    RoundedRectangle(cornerRadius: 15)
-            .foregroundColor(card.backgroundColor)
-      .frame(
-        width: Settings.thumbnailSize.width,
-        height: Settings.thumbnailSize.height)
-  }
-}
-
-struct CardThumbnailView_Previews: PreviewProvider {
-  static var previews: some View {
-    CardThumbnailView(card: initialCards[0])
-  }
+struct Card: Identifiable {
+  let id = UUID()
+  var backgroundColor: Color = .yellow
+  var elements: [CardElement] = []
+    
+    mutating func remove(_ element: CardElement) {
+      if let index = element.index(in: elements) {
+        elements.remove(at: index)
+      }
+    }
+    
 }
 

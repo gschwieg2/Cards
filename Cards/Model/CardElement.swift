@@ -1,4 +1,4 @@
-/// Copyright (c) 2021 Razeware LLC
+/// Copyright (c) 2022 Razeware LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -30,22 +30,30 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+import Foundation
+
 import SwiftUI
 
-struct CardThumbnailView: View {
-    let card: Card
-    var body: some View {
-    RoundedRectangle(cornerRadius: 15)
-            .foregroundColor(card.backgroundColor)
-      .frame(
-        width: Settings.thumbnailSize.width,
-        height: Settings.thumbnailSize.height)
-  }
+protocol CardElement {
+  var id: UUID { get }
+  var transform: Transform { get set }
 }
 
-struct CardThumbnailView_Previews: PreviewProvider {
-  static var previews: some View {
-    CardThumbnailView(card: initialCards[0])
+extension CardElement {
+  func index(in array: [CardElement]) -> Int? {
+    array.firstIndex { $0.id == id }
   }
 }
+struct ImageElement: CardElement {
+  let id = UUID()
+  var transform = Transform()
+  var image: Image
+}
 
+struct TextElement: CardElement {
+  let id = UUID()
+  var transform = Transform()
+  var text = ""
+  var textColor = Color.black
+  var textFont = "San Fransisco"
+}

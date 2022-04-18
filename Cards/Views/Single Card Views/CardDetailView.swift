@@ -36,34 +36,53 @@ import SwiftUI
 struct CardDetailView: View {
   @EnvironmentObject var viewState: ViewState
   @State private var currentModal: CardModal?
-
-  var body: some View {
-    content
-      .modifier(CardToolbar(currentModal: $currentModal))
-  }
-
-  var content: some View {
-    ZStack {
-      Group {
-        Capsule()
-          .foregroundColor(.yellow)
-        Text("Resize Me!")
-          .fontWeight(.bold)
-          .font(.system(size: 500))
-          .minimumScaleFactor(0.01)
-          .lineLimit(1)
+    @Binding var card: Card
+    
+    var body: some View {
+        content
+          .modifier(CardToolbar(currentModal: $currentModal))
       }
-      .resizableView()
-      Circle()
-        .resizableView()
-        .offset(CGSize(width: 50, height: 200))
-    }
-  }
+
+      var content: some View {
+        ZStack {
+          card.backgroundColor
+            .edgesIgnoringSafeArea(.all)
+          ForEach(card.elements, id: \.id) { element in
+            CardElementView(element: element)
+              .contextMenu {
+                // swiftlint:disable:next multiple_closures_with_trailing_closure
+                Button(action: { card.remove(element) }) {
+                  Label("Delete", systemImage: "trash")
+                }
+              }
+              .resizableView(transform: bindingTransform(for: element))
+              .frame(
+                width: element.transform.size.width,
+                height: element.transform.size.height)
+          }
+        }
+      }
+    
+    func bindingTransform(for element: CardElement)
+        -> Binding<Transform> {
+        // 2
+        guard let index = element.index(in: card.elements) else {
+          fatalError("Element does not exist")
+        }
+        // 3
+        return $card.elements[index].transform
+      }
+    
 }
 
 struct CardDetailView_Previews: PreviewProvider {
+  struct CardDetailPreview: View {
+    @State private var card = initialCards[0]
+    var body: some View {
+      CardDetailView(card: $card)
+        .environmentObject(ViewState(card: card))
+} }
   static var previews: some View {
-    CardDetailView()
-      .environmentObject(ViewState())
+    CardDetailPreview()
   }
 }
